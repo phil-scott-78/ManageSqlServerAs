@@ -1,0 +1,118 @@
+﻿<controls:MetroWindow  x:Class="ManageSqlServerAs.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:viewModels="clr-namespace:ManageSqlServerAs.ViewModels"
+        GlowBrush="{DynamicResource AccentColorBrush}"
+        Title="Launch SQL Instance As" Height="350" Width="525" EnableDWMDropShadow="True" AllowsTransparency="false" TitleCaps="False"
+        Icon="Resources/connect.ico"
+        ShowMaxRestoreButton="false"
+        ResizeMode="CanResizeWithGrip"
+        ShowIconOnTitleBar="false">
+
+    <Window.DataContext>
+        <viewModels:MainWindowViewModel></viewModels:MainWindowViewModel>
+    </Window.DataContext>
+    
+    <DockPanel>
+        <StackPanel Background="{DynamicResource AccentColorBrush}" Orientation="Horizontal" DockPanel.Dock="Bottom" >
+            <StackPanel.Resources>
+                <Style TargetType="Button" >
+                    <Setter Property="Background" Value="{DynamicResource AccentColorBrush3}" />
+                    <Setter Property="Foreground" Value="{DynamicResource LabelTextBrush}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}" />
+                    <Setter Property="BorderThickness" Value="1" />
+                    <Setter Property="Padding" Value="10,5,10,5" />
+                    <Setter Property="Margin" Value="5 5 0 5" />
+                    
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border x:Name="Border"
+                                    Margin="5"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}">
+                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          RecognizesAccessKey="True" />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsPressed" Value="True"> 
+                                        <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" TargetName="Border" />
+                                        <Setter Property="Foreground" Value="{DynamicResource FlatButtonPressedForegroundBrush}" /> 
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Foreground" Value="{DynamicResource GrayBrush2}" />
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource AccentColorBrush2}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </StackPanel.Resources>
+            <Button Content="Add" Command="{Binding Add}" />
+            <Button Content="Edit" Command="{Binding Edit}" />
+            <Button Content="Delete" Command="{Binding Delete}"/>
+            <Button Content="Connect" Command="{Binding Connect}" />
+        </StackPanel>
+        <ListBox x:Name="ApplicationListBox" ItemsSource="{Binding ApplicationLinks }" SelectedItem="{Binding Path=SelectedLink, Mode=TwoWay}"  Margin="5">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical" Margin="5"  >
+                        <TextBlock Text="{Binding Title}" FontFamily="Segoe UI Light" FontSize="20"/>
+                        <TextBlock Foreground="{DynamicResource GrayBrush5}" Text="{Binding Path}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+    </DockPanel>
+    <controls:MetroWindow.Flyouts>
+        <controls:FlyoutsControl>
+            <controls:Flyout x:Name="NewOrEditFlyout" 
+                             IsOpen="{Binding IsEditing}" 
+                             Margin="100 0 0 0"
+                             Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MetroWindow}, Path=ActualWidth}"
+                             Header="Settings"
+                             Theme="Adapt"
+                             IsModal="true"
+                             Position="Right">
+                <StackPanel Margin="15 0 15 15">
+                    <Label>Title</Label>
+                    <TextBox Text="{Binding InEditTitle, UpdateSourceTrigger = PropertyChanged }"></TextBox>
+                    
+                    <Label>Path</Label>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox Text="{Binding InEditPath, UpdateSourceTrigger = PropertyChanged }" />
+                        <Button Grid.Column="1" MinWidth="40" Content="..." Command="{Binding Browse}" Margin="4 0 0 0" />
+                    </Grid>
+                        
+                    
+                    
+                    <Label>Parameters (optional)</Label>
+                    <TextBox Text="{Binding InEditParameters,UpdateSourceTrigger = PropertyChanged }"></TextBox>
+
+                    <Label>Default User Name (optional)</Label>
+                    <TextBox Text="{Binding InEditUserName,UpdateSourceTrigger = PropertyChanged }"></TextBox>
+                    
+                    <StackPanel Orientation="Horizontal">
+                        <Button Margin="0 20 0 0" Content="Save Application" Command="{Binding SaveItem}"/>
+                        <Button Margin="10 20 0 0" Content="Cancel" Command="{Binding CancelEdit}"/>
+                    </StackPanel>
+
+                </StackPanel>                
+            </controls:Flyout>
+            
+        </controls:FlyoutsControl>
+    </controls:MetroWindow.Flyouts>
+</controls:MetroWindow>
+    
