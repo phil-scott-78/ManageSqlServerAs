@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -31,6 +32,8 @@ namespace ManageSqlServerAs
             ViewModel = new MainWindowViewModel();
                         DataContext = ViewModel;
             ApplicationListBox.Events().MouseDoubleClick
+                .InvokeCommand(this, v => v.ViewModel.Connect);
+            ApplicationListBox.Events().KeyUp.Where(i => i.Key == Key.Enter)
                 .InvokeCommand(this, v => v.ViewModel.Connect);
         }
     }
