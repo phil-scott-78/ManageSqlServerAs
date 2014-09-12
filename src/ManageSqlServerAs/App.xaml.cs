@@ -29,14 +29,15 @@ namespace ManageSqlServerAs
         private void App_Startup(object sender, StartupEventArgs e)
         {
             MainWindow = new MainWindow();
-            MainWindow.Show();
 
             if (e.Args.Length < 1)
             {
+                MainWindow.Show();
                 return;
             }
 
             FindAndLaunchByHash(((MainWindow) MainWindow).ViewModel, e.Args[0]);
+            Current.Shutdown();
         }
 
         public void Init()
