@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using ManageSqlServerAs.Tools;
@@ -36,6 +37,9 @@ namespace ManageSqlServerAs.ViewModels
             Connect = ReactiveCommand.Create(this.WhenAny(x => x.SelectedLink, t => t.Value != null));
             (Connect as ReactiveCommand<object>).Subscribe(_ => ConnectImpl());
 
+            Duplicate = ReactiveCommand.Create(this.WhenAny(x => x.SelectedLink, t => t.Value != null));
+            (Duplicate as ReactiveCommand<object>).Subscribe(_ => DuplicateImpl());
+
             SaveItem = ReactiveCommand.Create(this.WhenAny(
                 x => x.InEditPath, 
                 y => y.InEditTitle, 
@@ -52,7 +56,22 @@ namespace ManageSqlServerAs.ViewModels
                 LoadApplicationLinks();
             }
 
-            ApplicationLinks.Changed.Throttle(TimeSpan.FromSeconds(1)).Subscribe(_ => SaveApplicationLinks());
+            ApplicationLinks.Changed.Throttle(TimeSpan.FromSeconds(1)).Subscribe(async _ => await SaveApplicationLinks());
+        }
+
+        private void DuplicateImpl()
+        {
+            var duplicate = new ApplicationLink
+            {
+                DefaultUserName = SelectedLink.DefaultUserName,
+                Parameters = SelectedLink.Parameters,
+                Path = SelectedLink.Path,
+                Title = SelectedLink.Title + " (copy)"
+            };
+            ApplicationLinks.Insert(ApplicationLinks.IndexOf(SelectedLink), duplicate);
+            SelectedLink = duplicate;
+            
+            EditImpl();
         }
 
 
@@ -171,7 +190,8 @@ namespace ManageSqlServerAs.ViewModels
         public ICommand SaveItem { get; private set; }
         public ICommand Browse { get; private set; }
         public ICommand CancelEdit { get; private set; }
-
+        public ICommand Duplicate { get; private set; }
+    
         private ApplicationLink _selectedLink;
         private bool _isEditing;
         private bool _isAddMode;
@@ -241,13 +261,17 @@ namespace ManageSqlServerAs.ViewModels
             }
         }
 
-        private void SaveApplicationLinks()
+        private async Task SaveApplicationLinks()
         {
             Debug.WriteLine("Saving links");
             try
             {
                 var serialized = JsonConvert.SerializeObject(ApplicationLinks);
-                File.WriteAllText(_fileName, serialized);
+
+                using (var writer = new StreamWriter(_fileName))
+                {
+                    await writer.WriteAsync(serialized);
+                }                
             }
             catch (Exception ex)
             {
