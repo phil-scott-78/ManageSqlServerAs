@@ -16,7 +16,7 @@
     </Window.DataContext>
     
     <DockPanel>
-        <StackPanel Background="{DynamicResource AccentColorBrush}" Orientation="Horizontal" DockPanel.Dock="Bottom" >
+        <StackPanel Background="{DynamicResource AccentColorBrush}" Orientation="Horizontal" DockPanel.Dock="Bottom"  >
             <StackPanel.Resources>
                 <Style TargetType="Button" >
                     <Setter Property="Background" Value="{DynamicResource AccentColorBrush3}" />
@@ -58,6 +58,7 @@
             </StackPanel.Resources>
             <Button Content="Add" Command="{Binding Add}" />
             <Button Content="Edit" Command="{Binding Edit}" />
+            <Button Content="Duplicate" Command="{Binding Duplicate}" />
             <Button Content="Delete" Command="{Binding Delete}"/>
             <Button Content="Connect" Command="{Binding Connect}" />
         </StackPanel>
