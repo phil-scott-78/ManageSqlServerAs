@@ -1,77 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Name='ManageSQLServerAs' Id='{74B7452F-9BCE-4E25-9F88-583AD1EE0FBE}'  
-  UpgradeCode='{74B7452F-9BCE-4E25-9F88-583AD1EE0FBE}'  
-  Language='1033' Version='1.0.0.0' Manufacturer='Philco'>  
-  
-  <Package Id='*' InstallerVersion='200' Compressed='yes' />  
-  
-  <Condition Message="You need to be an administrator to install this product.">  
-   Privileged  
-  </Condition>  
-  <Condition Message='This setup requires the .NET Framework 2.0 or higher.'> 
-   <![CDATA[MsiNetAssemblySupport >= "4.0"]]>  
-  </Condition>  
-  <Media Id='1' Cabinet='ManageSqlServerAs.cab' EmbedCab='yes' />  
-  <Icon Id="ManageSQLServerAs.ico" SourceFile="connect.ico"/>  
-    
-  <Directory Id='TARGETDIR' Name='SourceDir'>  
-   <Directory Id='ProgramFilesFolder'>  
-    <Directory Id='INSTALLDIR' Name='ManageSqlServerAs'>  
-      
-     <Component Id='MainExecutable' Guid='{74B7452F-9BCE-4E25-9F88-583AD1EE0FBE}'>  
-      <File Source='$(var.ManageSqlServerAs.TargetPath)' Vital='yes'>  
-       <Shortcut Id="startmenuSampleApp" Directory="ProgramMenuDir" Name="ManageSQLServerAs" WorkingDirectory='INSTALLDIR' Advertise='yes' Icon='ManageSQLServerAs.ico' />  
-      </File>  
-      <RemoveFolder Id="INSTALLDIR" On="uninstall" />  
-     </Component>  
-    	<Component Id="ProductComponent" Guid="DFC4AABF-4834-4E3B-99B5-BBB71881607B">
-        <File Source="$(var.ManageSqlServerAs.TargetDir)\ManageSqlServerAs.exe.config" />
-        <File Source="$(var.ManageSqlServerAs.TargetDir)\MahApps.Metro.dll" />
-        <File Source="$(var.ManageSqlServerAs.TargetDir)\Newtonsoft.Json.dll" />
-        <File Source="$(var.ManageSqlServerAs.TargetDir)\ReactiveUI.dll" />
-        <File Source="$(var.ManageSqlServerAs.TargetDir)\ReactiveUI.Events.dll" />
-        <File Source="$(var.ManageSqlServerAs.TargetDir)\Splat.dll" />
-        <File Source="$(var.ManageSqlServerAs.TargetDir)\System.Reactive.Core.dll" />
-        <File Source="$(var.ManageSqlServerAs.TargetDir)\System.Reactive.Interfaces.dll" />
-        <File Source="$(var.ManageSqlServerAs.TargetDir)\System.Reactive.Linq.dll" />
-        <File Source="$(var.ManageSqlServerAs.TargetDir)\System.Reactive.PlatformServices.dll" />
-        <File Source="$(var.ManageSqlServerAs.TargetDir)\System.Reactive.Windows.Threading.dll" />
-        <File Source="$(var.ManageSqlServerAs.TargetDir)\System.Windows.Interactivity.dll" />
-      </Component> 
-    </Directory>  
-   </Directory>  
-  
-   <Directory Id="ProgramMenuFolder">  
-    <Directory Id="ProgramMenuDir" Name="Manage SQL Server As">  
-     <Component Id='ProgramMenuDir' Guid='{E192D735-14A3-420D-93F6-8E66421B9371}'>  
-      <RegistryValue Root='HKCU' Key='SOFTWARE\PhilCo\ManageSqlServerAs'  
-       Type='string' Value='Installed' KeyPath='yes' />  
-      <RemoveFolder Id="ProgramMenuDir" On="uninstall" />  
-     </Component>  
-    </Directory>  
-   </Directory>  
-  </Directory>  
-  
-  
-  <Feature Id='Complete' Level="1">  
-   <ComponentRef Id='MainExecutable' />  
-    <ComponentRef Id='ProductComponent' />  
-   <ComponentRef Id='ProgramMenuDir' />  
-  </Feature>  
-  
-  <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />  
-  <UIRef Id="WixUI_InstallDir" />  
-  
-  
-  <!-- This will ensure that the LaunchConditions  
-  are executed only after searching -->  
-  <InstallUISequence>  
-   <LaunchConditions After='AppSearch' />  
-  </InstallUISequence>  
-  <InstallExecuteSequence>  
-   <LaunchConditions After='AppSearch' />  
-  </InstallExecuteSequence>  
-  
- </Product>  
-</Wix>  
+  <Product  Name='ManageSQLServerAs'
+            Id='*'
+            UpgradeCode='{77773F86-74F3-4C96-85E1-C3A937DE5432}'
+            Language='1033'
+            Version='1.1.0'
+            Manufacturer='Philco'>
+    <Package Id='*' InstallerVersion='200' Compressed='yes' />
+    <Condition Message="You need to be an administrator to install this product.">
+      Privileged
+    </Condition>
+    <Condition Message='This setup requires the .NET Framework 2.0 or higher.'>
+      <![CDATA[MsiNetAssemblySupport >= "4.0"]]>
+    </Condition>
+
+    <MajorUpgrade DowngradeErrorMessage="Can’t downgrade." />
+
+    <Media Id='1' Cabinet='ManageSqlServerAs.cab' EmbedCab='yes' />
+    <Icon Id="ManageSQLServerAs.ico" SourceFile="connect.ico"/>
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+      <Directory Id='ProgramFilesFolder'>
+        <Directory Id='INSTALLDIR' Name='ManageSqlServerAs'>
+          <Component Id='MainExecutable' Guid='{74B7452F-9BCE-4E25-9F88-583AD1EE0FBE}'>
+            <File Source='$(var.ManageSqlServerAs.TargetPath)' KeyPath='yes' Vital='yes'>
+              <Shortcut Id='ManageSqlServerAs' Directory="ProgramMenuDir" Name="ManageSQLServerAs" WorkingDirectory='INSTALLDIR' Advertise='yes' Icon='ManageSQLServerAs.ico' />
+            </File>
+            <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+          </Component>
+          <Component Id="ProductComponent" Guid="DFC4AABF-4834-4E3B-99B5-BBB71881607B">
+            <File Source="$(var.ManageSqlServerAs.TargetDir)\ManageSqlServerAs.exe.config" />
+            <File Source="$(var.ManageSqlServerAs.TargetDir)\MahApps.Metro.dll" />
+            <File Source="$(var.ManageSqlServerAs.TargetDir)\Newtonsoft.Json.dll" />
+            <File Source="$(var.ManageSqlServerAs.TargetDir)\ReactiveUI.dll" />
+            <File Source="$(var.ManageSqlServerAs.TargetDir)\ReactiveUI.Events.dll" />
+            <File Source="$(var.ManageSqlServerAs.TargetDir)\Splat.dll" />
+            <File Source="$(var.ManageSqlServerAs.TargetDir)\System.Reactive.Core.dll" />
+            <File Source="$(var.ManageSqlServerAs.TargetDir)\System.Reactive.Interfaces.dll" />
+            <File Source="$(var.ManageSqlServerAs.TargetDir)\System.Reactive.Linq.dll" />
+            <File Source="$(var.ManageSqlServerAs.TargetDir)\System.Reactive.PlatformServices.dll" />
+            <File Source="$(var.ManageSqlServerAs.TargetDir)\System.Reactive.Windows.Threading.dll" />
+            <File Source="$(var.ManageSqlServerAs.TargetDir)\System.Windows.Interactivity.dll" />
+            <File Source="$(var.ManageSqlServerAs.TargetDir)\GongSolutions.Wpf.DragDrop.dll" />
+          </Component>
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ProgramMenuDir" Name="Manage SQL Server As">
+          <Component Id='ProgramMenuDir' Guid='{E192D735-14A3-420D-93F6-8E66421B9371}'>
+            <RegistryValue Root='HKCU' Key='SOFTWARE\PhilCo\ManageSqlServerAs'
+             Type='string' Value='Installed' KeyPath='yes' />
+            <RemoveFolder Id="ProgramMenuDir" On="uninstall" />
+          </Component>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Feature Id='Complete' Level="1">
+      <ComponentRef Id='MainExecutable' />
+      <ComponentRef Id='ProductComponent' />
+      <ComponentRef Id='ProgramMenuDir' />
+    </Feature>
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+    <UIRef Id="WixUI_InstallDir" />
+
+    <!-- This will ensure that the LaunchConditions
+  are executed only after searching -->
+    <InstallUISequence>
+      <LaunchConditions After='AppSearch' />
+    </InstallUISequence>
+    <InstallExecuteSequence>
+      <LaunchConditions After='AppSearch' />
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
