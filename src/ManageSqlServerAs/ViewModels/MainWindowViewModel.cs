@@ -1,5 +1,7 @@
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Input;
 using ManageSqlServerAs.Tools;
@@ -49,7 +51,10 @@ namespace ManageSqlServerAs.ViewModels
             {
                 LoadApplicationLinks();
             }
+
+            ApplicationLinks.Changed.Throttle(TimeSpan.FromSeconds(1)).Subscribe(_ => SaveApplicationLinks());
         }
+
 
         private void BrowseImpl()
         {
@@ -102,7 +107,6 @@ namespace ManageSqlServerAs.ViewModels
             }
             
             IsEditing = false;
-            SaveApplicationLinks();
         }
 
         private void ConnectImpl()
@@ -147,13 +151,11 @@ namespace ManageSqlServerAs.ViewModels
             InEditUserName = SelectedLink.DefaultUserName;
             IsEditing = true;
             IsAddMode = false;
-            SaveApplicationLinks();
         }
 
         private void DeleteImpl()
         {
             ApplicationLinks.Remove(SelectedLink);
-            SaveApplicationLinks();
         }
 
         public ReactiveList<ApplicationLink> ApplicationLinks
@@ -241,6 +243,7 @@ namespace ManageSqlServerAs.ViewModels
 
         private void SaveApplicationLinks()
         {
+            Debug.WriteLine("Saving links");
             try
             {
                 var serialized = JsonConvert.SerializeObject(ApplicationLinks);

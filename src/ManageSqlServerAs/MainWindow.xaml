@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:viewModels="clr-namespace:ManageSqlServerAs.ViewModels"
+        xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
         GlowBrush="{DynamicResource AccentColorBrush}"
         Title="Launch SQL Instance As" Height="350" Width="525" EnableDWMDropShadow="True" AllowsTransparency="false" TitleCaps="False"
         Icon="Resources/connect.ico"
@@ -60,7 +61,12 @@
             <Button Content="Delete" Command="{Binding Delete}"/>
             <Button Content="Connect" Command="{Binding Connect}" />
         </StackPanel>
-        <ListBox x:Name="ApplicationListBox" ItemsSource="{Binding ApplicationLinks }" SelectedItem="{Binding Path=SelectedLink, Mode=TwoWay}"  Margin="5">
+        <ListBox    x:Name="ApplicationListBox" 
+                    ItemsSource="{Binding ApplicationLinks }" 
+                    SelectedItem="{Binding Path=SelectedLink, Mode=TwoWay}"  
+                    dd:DragDrop.IsDragSource="True"
+                    dd:DragDrop.IsDropTarget="True"
+                    Margin="5">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Vertical" Margin="5"  >
