@@ -39,5 +39,11 @@ namespace ManageSqlServerAs.ViewModels
             get { return _defaultUserName; }
             set { this.RaiseAndSetIfChanged(ref _defaultUserName, value); }
         }
+
+        public override int GetHashCode()
+        {
+            // this is used to lookup application links passed by the jump list
+            return (Title + Path + Parameters + DefaultUserName).GetHashCode();
+        }
     }
 }

@@ -1,10 +1,13 @@
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Reactive.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Shell;
 using ManageSqlServerAs.Tools;
 using Newtonsoft.Json;
 using ReactiveUI;
@@ -41,22 +44,23 @@ namespace ManageSqlServerAs.ViewModels
             (Duplicate as ReactiveCommand<object>).Subscribe(_ => DuplicateImpl());
 
             SaveItem = ReactiveCommand.Create(this.WhenAny(
-                x => x.InEditPath, 
-                y => y.InEditTitle, 
-                (p,t) => 
-                    string.IsNullOrWhiteSpace(t.Value) == false && 
-                    string.IsNullOrWhiteSpace(p.Value) == false && 
+                x => x.InEditPath,
+                y => y.InEditTitle,
+                (p,t) =>
+                    string.IsNullOrWhiteSpace(t.Value) == false &&
+                    string.IsNullOrWhiteSpace(p.Value) == false &&
                     File.Exists(p.Value)));
 
             (SaveItem as ReactiveCommand<object>).Subscribe(_ => SaveItemImpl());
-
 
             using (ApplicationLinks.SuppressChangeNotifications())
             {
                 LoadApplicationLinks();
             }
 
-            ApplicationLinks.Changed.Throttle(TimeSpan.FromSeconds(1)).Subscribe(async _ => await SaveApplicationLinks());
+            ApplicationLinks.Changed.Throttle(TimeSpan.FromSeconds(1))
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(async _ => await SaveApplicationLinks());
         }
 
         private void DuplicateImpl()
@@ -70,10 +74,9 @@ namespace ManageSqlServerAs.ViewModels
             };
             ApplicationLinks.Insert(ApplicationLinks.IndexOf(SelectedLink), duplicate);
             SelectedLink = duplicate;
-            
+
             EditImpl();
         }
-
 
         private void BrowseImpl()
         {
@@ -82,7 +85,7 @@ namespace ManageSqlServerAs.ViewModels
             {
                 initialDirectory = Path.GetDirectoryName(InEditPath);
             }
-            
+
             var dlg = new Microsoft.Win32.OpenFileDialog
             {
                 DefaultExt = ".exe",
@@ -95,7 +98,7 @@ namespace ManageSqlServerAs.ViewModels
             // Show open file dialog box
             var result = dlg.ShowDialog();
 
-            // Process open file dialog box results 
+            // Process open file dialog box results
             if (result == true)
             {
                 InEditPath = dlg.FileName;
@@ -104,7 +107,6 @@ namespace ManageSqlServerAs.ViewModels
 
         private void SaveItemImpl()
         {
-
             if (IsAddMode)
             {
                 var newLink = new ApplicationLink
@@ -118,18 +120,17 @@ namespace ManageSqlServerAs.ViewModels
             }
             else
             {
-
                 SelectedLink.Title = InEditTitle;
                 SelectedLink.Path = InEditPath;
                 SelectedLink.Parameters = InEditParameters;
                 SelectedLink.DefaultUserName = InEditUserName;
             }
-            
+
             IsEditing = false;
         }
 
         private void ConnectImpl()
-        {            
+        {
             var promptForWindowsCredentials = CredentialUi.PromptForWindowsCredentials(SelectedLink.Title, "Please enter the password to launch " + SelectedLink.Title, SelectedLink.DefaultUserName, "");
             if (promptForWindowsCredentials == null)
             {
@@ -139,16 +140,16 @@ namespace ManageSqlServerAs.ViewModels
             try
             {
                 Launcher.CreateProcess(
-                    promptForWindowsCredentials.UserName, 
+                    promptForWindowsCredentials.UserName,
                     promptForWindowsCredentials.DomainName,
-                    promptForWindowsCredentials.Password, 
+                    promptForWindowsCredentials.Password,
                     SelectedLink.Path + " " + SelectedLink.Parameters);
 
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error");
-            }            
+            }
         }
 
         private void AddImpl()
@@ -191,7 +192,7 @@ namespace ManageSqlServerAs.ViewModels
         public ICommand Browse { get; private set; }
         public ICommand CancelEdit { get; private set; }
         public ICommand Duplicate { get; private set; }
-    
+
         private ApplicationLink _selectedLink;
         private bool _isEditing;
         private bool _isAddMode;
@@ -247,6 +248,7 @@ namespace ManageSqlServerAs.ViewModels
             if (File.Exists(_fileName) == false)
             {
                 ApplicationLinks = new ReactiveList<ApplicationLink>();
+                UpdateJumpList();
             }
             else
             {
@@ -261,22 +263,48 @@ namespace ManageSqlServerAs.ViewModels
             }
         }
 
+        [STAThread]
         private async Task SaveApplicationLinks()
         {
             Debug.WriteLine("Saving links");
             try
             {
                 var serialized = JsonConvert.SerializeObject(ApplicationLinks);
-
                 using (var writer = new StreamWriter(_fileName))
                 {
                     await writer.WriteAsync(serialized);
-                }                
+                }
+
+                UpdateJumpList();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error saving links", ex.Message);
+                MessageBox.Show(ex.Message,  "Error saving links");
             }
+        }
+
+        private void UpdateJumpList()
+        {
+            var jumpList = new JumpList();
+            JumpList.SetJumpList(Application.Current, jumpList);
+            foreach (var applicationLink in ApplicationLinks)
+            {
+                var jumpTask = new JumpTask()
+                {
+                    CustomCategory = "Applications",
+                    Title = applicationLink.Title,
+                    Arguments = applicationLink.GetHashCode().ToString(CultureInfo.InvariantCulture),
+                    ApplicationPath = Assembly.GetEntryAssembly().Location
+                };
+
+                string directoryName = new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName;
+                if (string.IsNullOrWhiteSpace(directoryName) == false)
+                {
+                    jumpTask.IconResourcePath = Path.Combine(directoryName, "resources\\connect.ico");
+                }
+                jumpList.JumpItems.Add(jumpTask);
+            }
+            jumpList.Apply();
         }
     }
 }
