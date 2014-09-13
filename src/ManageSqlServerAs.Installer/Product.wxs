@@ -5,7 +5,7 @@
             Id='*'
             UpgradeCode='{77773F86-74F3-4C96-85E1-C3A937DE5432}'
             Language='1033'
-            Version='1.1.0'
+            Version='1.2.1'
             Manufacturer='Philco'>
     <Package Id='*' InstallerVersion='200' Compressed='yes' />
     <Condition Message="You need to be an administrator to install this product.">
@@ -15,7 +15,8 @@
       <![CDATA[MsiNetAssemblySupport >= "4.0"]]>
     </Condition>
 
-    <MajorUpgrade DowngradeErrorMessage="Can’t downgrade." />
+    <MajorUpgrade   Schedule="afterInstallInitialize"
+ DowngradeErrorMessage="Can’t downgrade." />
 
     <Media Id='1' Cabinet='ManageSqlServerAs.cab' EmbedCab='yes' />
     <Icon Id="ManageSQLServerAs.ico" SourceFile="connect.ico"/>
@@ -25,8 +26,8 @@
           <Component Id='MainExecutable' Guid='{74B7452F-9BCE-4E25-9F88-583AD1EE0FBE}'>
             <File Source='$(var.ManageSqlServerAs.TargetPath)' KeyPath='yes' Vital='yes'>
               <Shortcut Id='ManageSqlServerAs' Directory="ProgramMenuDir" Name="ManageSQLServerAs" WorkingDirectory='INSTALLDIR' Advertise='yes' Icon='ManageSQLServerAs.ico' />
+              <netfx:NativeImage Id='ManageSqlServerAsNative' Debug='no' Platform='all' />
             </File>
-            <netfx:NativeImage Id="ngen_MyApplication.exe" Platform="32bit" Priority="0" AppBaseDirectory="APPLICATIONROOTDIRECTORY"/>
             <RemoveFolder Id="INSTALLDIR" On="uninstall" />
           </Component>
           <Component Id="ProductComponent" Guid="DFC4AABF-4834-4E3B-99B5-BBB71881607B">
@@ -43,8 +44,12 @@
             <File Source="$(var.ManageSqlServerAs.TargetDir)\System.Reactive.Windows.Threading.dll" />
             <File Source="$(var.ManageSqlServerAs.TargetDir)\System.Windows.Interactivity.dll" />
             <File Source="$(var.ManageSqlServerAs.TargetDir)\GongSolutions.Wpf.DragDrop.dll"  />
-            <File Source="$(var.ManageSqlServerAs.TargetDir)\Resources\connect.ico"  />
           </Component>
+          <Directory Id="Resources" Name="Resources">
+            <Component Id="Resources">
+              <File Source="$(var.ManageSqlServerAs.TargetDir)\Resources\connect.ico"  />
+            </Component>
+          </Directory>
         </Directory>
       </Directory>
       <Directory Id="ProgramMenuFolder">
@@ -61,6 +66,7 @@
     <Feature Id='Complete' Level="1">
       <ComponentRef Id='MainExecutable' />
       <ComponentRef Id='ProductComponent' />
+      <ComponentRef Id='Resources' />
       <ComponentRef Id='ProgramMenuDir' />
     </Feature>
 

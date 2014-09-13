@@ -16,20 +16,29 @@ namespace ManageSqlServerAs
         [STAThread]
         public static void Main()
         {
-            if (SingleInstance<App>.InitializeAsFirstInstance("ManageSqlServerAs"))
+            try
             {
-                var application = new App();
-                application.Init();
-                application.Run();
-                // Allow single instance code to perform cleanup operations
-                SingleInstance<App>.Cleanup();
+                if (SingleInstance<App>.InitializeAsFirstInstance("ManageSqlServerAs"))
+                {
+                    var application = new App();
+                    application.Init();
+                    application.Run();
+                    // Allow single instance code to perform cleanup operations
+                    SingleInstance<App>.Cleanup();
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+
         }
 
         private void App_Startup(object sender, StartupEventArgs e)
         {
-            MainWindow = new MainWindow();
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
+            MainWindow = new MainWindow();
             if (e.Args.Length < 1)
             {
                 MainWindow.Show();
@@ -38,6 +47,12 @@ namespace ManageSqlServerAs
 
             FindAndLaunchByHash(((MainWindow) MainWindow).ViewModel, e.Args[0]);
             Current.Shutdown();
+        }
+
+        void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            // put your tracing or logging code here (I put a message box as an example)
+            MessageBox.Show(e.ExceptionObject.ToString());
         }
 
         public void Init()
