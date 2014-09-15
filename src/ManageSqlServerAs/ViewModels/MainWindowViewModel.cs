@@ -263,10 +263,8 @@ namespace ManageSqlServerAs.ViewModels
             }
         }
 
-        [STAThread]
         private async Task SaveApplicationLinks()
         {
-            Debug.WriteLine("Saving links");
             try
             {
                 var serialized = JsonConvert.SerializeObject(ApplicationLinks);
