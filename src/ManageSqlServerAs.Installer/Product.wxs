@@ -5,7 +5,7 @@
             Id='*'
             UpgradeCode='{77773F86-74F3-4C96-85E1-C3A937DE5432}'
             Language='1033'
-            Version='1.2.1'
+            Version='1.1.0'
             Manufacturer='Philco'>
     <Package Id='*' InstallerVersion='200' Compressed='yes' />
     <Condition Message="You need to be an administrator to install this product.">
