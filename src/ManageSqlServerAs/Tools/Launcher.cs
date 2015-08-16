@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 
 namespace ManageSqlServerAs.Tools
@@ -69,13 +70,14 @@ namespace ManageSqlServerAs.Tools
         [DllImport("Kernel32.dll", SetLastError = true)]
         public static extern bool CloseHandle(IntPtr handle);
 
-        public static bool CreateProcess(string userName, string domain, string password, string path)
+        public static void CreateProcess(string userName, string domain, string password, string path)
         {
             const uint logonNetcredentialsOnly = 2;
+            
             var lpStartupInfo = new StartupInfo();
             ProcessInformation processInformation;
 
-            return CreateProcessWithLogonW(
+            var results = CreateProcessWithLogonW(
                 userName,
                 domain,
                 password,
@@ -87,7 +89,9 @@ namespace ManageSqlServerAs.Tools
                 null,
                 ref lpStartupInfo,
                 out processInformation);
-        }
 
+            if (!results)
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+        }
     }
 }

@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Shell;
+using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using ManageSqlServerAs.Tools;
 using Newtonsoft.Json;
 using ReactiveUI;
@@ -129,7 +131,7 @@ namespace ManageSqlServerAs.ViewModels
             IsEditing = false;
         }
 
-        private void ConnectImpl()
+        private async Task ConnectImpl()
         {
             var promptForWindowsCredentials = CredentialUi.PromptForWindowsCredentials(SelectedLink.Title, "Please enter the password to launch " + SelectedLink.Title, SelectedLink.DefaultUserName, "");
             if (promptForWindowsCredentials == null)
@@ -148,7 +150,14 @@ namespace ManageSqlServerAs.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error");
+
+                var metroWindow = (MetroWindow)Application.Current.MainWindow;
+                metroWindow.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Theme; 
+                var message = ex.Message;
+                if (message == "A logon request contained an invalid logon type value")
+                    message =
+                        "An invalid login type was detected. Make sure your username is a valid UPN (e.g. user@domain.com)";
+                await metroWindow.ShowMessageAsync("Error launching application", message);
             }
         }
 
@@ -277,7 +286,9 @@ namespace ManageSqlServerAs.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message,  "Error saving links");
+                var metroWindow = (MetroWindow) Application.Current.MainWindow;
+                metroWindow.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented; // set the theme
+                await metroWindow.ShowMessageAsync("Error launching application", ex.Message);
             }
         }
 

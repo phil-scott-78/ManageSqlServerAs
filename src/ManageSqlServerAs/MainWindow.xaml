@@ -5,7 +5,7 @@
         xmlns:viewModels="clr-namespace:ManageSqlServerAs.ViewModels"
         xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
         GlowBrush="{DynamicResource AccentColorBrush}"
-        Title="Launch SQL Instance As" Height="350" Width="525" EnableDWMDropShadow="True" AllowsTransparency="false" TitleCaps="False"
+        Title="Launch SQL Instance As" Height="400" Width="600" EnableDWMDropShadow="True" AllowsTransparency="false" TitleCaps="False"
         Icon="Resources/connect.ico"
         ShowMaxRestoreButton="false"
         ResizeMode="CanResizeWithGrip"
@@ -14,7 +14,6 @@
     <Window.DataContext>
         <viewModels:MainWindowViewModel></viewModels:MainWindowViewModel>
     </Window.DataContext>
-    
     <DockPanel>
         <StackPanel Background="{DynamicResource AccentColorBrush}" Orientation="Horizontal" DockPanel.Dock="Bottom"  >
             <StackPanel.Resources>
@@ -25,7 +24,6 @@
                     <Setter Property="BorderThickness" Value="1" />
                     <Setter Property="Padding" Value="10,5,10,5" />
                     <Setter Property="Margin" Value="5 5 0 5" />
-                    
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type Button}">
@@ -40,9 +38,9 @@
                                           RecognizesAccessKey="True" />
                                 </Border>
                                 <ControlTemplate.Triggers>
-                                    <Trigger Property="IsPressed" Value="True"> 
+                                    <Trigger Property="IsPressed" Value="True">
                                         <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" TargetName="Border" />
-                                        <Setter Property="Foreground" Value="{DynamicResource FlatButtonPressedForegroundBrush}" /> 
+                                        <Setter Property="Foreground" Value="{DynamicResource FlatButtonPressedForegroundBrush}" />
                                     </Trigger>
                                     <Trigger Property="IsEnabled" Value="False">
                                         <Setter Property="Foreground" Value="{DynamicResource GrayBrush2}" />
@@ -62,9 +60,9 @@
             <Button Content="Delete" Command="{Binding Delete}"/>
             <Button Content="Connect" Command="{Binding Connect}" />
         </StackPanel>
-        <ListBox    x:Name="ApplicationListBox" 
-                    ItemsSource="{Binding ApplicationLinks }" 
-                    SelectedItem="{Binding Path=SelectedLink, Mode=TwoWay}"  
+        <ListBox    x:Name="ApplicationListBox"
+                    ItemsSource="{Binding ApplicationLinks }"
+                    SelectedItem="{Binding Path=SelectedLink, Mode=TwoWay}"
                     dd:DragDrop.IsDragSource="True"
                     dd:DragDrop.IsDropTarget="True"
                     Margin="5">
@@ -81,8 +79,8 @@
     </DockPanel>
     <controls:MetroWindow.Flyouts>
         <controls:FlyoutsControl>
-            <controls:Flyout x:Name="NewOrEditFlyout" 
-                             IsOpen="{Binding IsEditing}" 
+            <controls:Flyout x:Name="NewOrEditFlyout"
+                             IsOpen="{Binding IsEditing}"
                              Margin="100 0 0 0"
                              Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MetroWindow}, Path=ActualWidth}"
                              Header="Settings"
@@ -92,7 +90,6 @@
                 <StackPanel Margin="15 0 15 15">
                     <Label>Title</Label>
                     <TextBox Text="{Binding InEditTitle, UpdateSourceTrigger = PropertyChanged }"></TextBox>
-                    
                     <Label>Path</Label>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -102,24 +99,20 @@
                         <TextBox Text="{Binding InEditPath, UpdateSourceTrigger = PropertyChanged }" />
                         <Button Grid.Column="1" MinWidth="40" Content="..." Command="{Binding Browse}" Margin="4 0 0 0" />
                     </Grid>
-                        
-                    
-                    
+
                     <Label>Parameters (optional)</Label>
                     <TextBox Text="{Binding InEditParameters,UpdateSourceTrigger = PropertyChanged }"></TextBox>
 
                     <Label>Default User Name (optional)</Label>
-                    <TextBox Text="{Binding InEditUserName,UpdateSourceTrigger = PropertyChanged }"></TextBox>
-                    
+                    <TextBox Text="{Binding InEditUserName,UpdateSourceTrigger = PropertyChanged }" controls:TextBoxHelper.Watermark="Username in UPN format (username@domain.com)"></TextBox>
+
                     <StackPanel Orientation="Horizontal">
                         <Button Margin="0 20 0 0" Content="Save Application" Command="{Binding SaveItem}"/>
                         <Button Margin="10 20 0 0" Content="Cancel" Command="{Binding CancelEdit}"/>
                     </StackPanel>
 
-                </StackPanel>                
+                </StackPanel>
             </controls:Flyout>
-            
         </controls:FlyoutsControl>
     </controls:MetroWindow.Flyouts>
 </controls:MetroWindow>
-    
