@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -60,7 +61,10 @@ namespace ManageSqlServerAs.ViewModels
                 LoadApplicationLinks();
             }
 
-            ApplicationLinks.Changed.Throttle(TimeSpan.FromSeconds(1))
+            ApplicationLinks.ChangeTrackingEnabled = true;
+            ApplicationLinks.Changed.Select(_ => Unit.Default)
+                .Merge(ApplicationLinks.ItemChanged.Select(_ => Unit.Default))
+                .Throttle(TimeSpan.FromSeconds(1))
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(async _ => await SaveApplicationLinks());
         }
