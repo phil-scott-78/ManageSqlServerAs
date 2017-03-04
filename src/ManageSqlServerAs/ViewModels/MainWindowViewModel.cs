@@ -81,7 +81,7 @@ namespace ManageSqlServerAs.ViewModels
             ApplicationLinks.Insert(ApplicationLinks.IndexOf(SelectedLink), duplicate);
             SelectedLink = duplicate;
 
-            EditImpl();
+            EditImpl()
         }
 
         private void BrowseImpl()
@@ -313,7 +313,7 @@ namespace ManageSqlServerAs.ViewModels
                 string directoryName = new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName;
                 if (string.IsNullOrWhiteSpace(directoryName) == false)
                 {
-                    jumpTask.IconResourcePath = Path.Combine(directoryName, "resources\\connect.ico");
+                    jumpTask.IconResourcePath = Path.Combine(directoryName, applicationLink.Path);
                 }
                 jumpList.JumpItems.Add(jumpTask);
             }
